@@ -1,3 +1,6 @@
+use tetris::playfield::Playfield;
+
 fn main() {
-    println!("Hello, world!");
+    let playfield = Playfield::new();
+    println!("{}", playfield);
 }
