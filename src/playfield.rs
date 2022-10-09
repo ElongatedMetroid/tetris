@@ -1,9 +1,10 @@
 use core::fmt;
-use crate::tetromino::Tetromino;
+
+use crate::{tetromino::Tetromino, cell::Cell};
 
 pub struct Playfield {
     // 10 cells wide by 24 cells tall 
-    cells: [[char; 10]; 24]
+    cells: [[Cell; 10]; 24]
 }
 
 impl fmt::Display for Playfield {
@@ -27,7 +28,7 @@ impl Playfield {
         }
     }
     
-    pub fn spawn_tetrimino(t: Tetromino) {
+    pub fn spawn_tetrimino(&mut self, t: Tetromino) {
         
     }
 }
