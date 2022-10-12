@@ -63,12 +63,17 @@ impl Playfield {
 
         self.cells[y][x] = t.cell_data.main_cell.clone();
 
-        for cell in &t.cell_data.attached_cells {
+        for cell in t.cell_data.attached_cells {
             // Convert relative coords to playfield coords
             let y = (y as isize + cell.position.y) as usize;
             let x = (x as isize + cell.position.x) as usize;
 
-            self.cells[y][x] = cell.clone();
+            let mut cell = cell.clone();
+
+            cell.position.y = y as isize;
+            cell.position.x = x as isize;
+
+            self.cells[y][x] = cell;
         }
     }
 
