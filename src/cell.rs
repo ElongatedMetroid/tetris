@@ -2,12 +2,11 @@ use std::fmt;
 
 use nalgebra::Vector2;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Cell {
     pub(super) character: char,
     /// Only used for spawning in the tetromino
     pub(super) position: Vector2<isize>,
-    pub(super) tetromino_part: bool,
 }
 
 /// A collection of Cell's attached in a certain way
@@ -34,15 +33,12 @@ impl Cell {
         Self {
             character,
             position,
-            tetromino_part: false,
         }
     }
 }
 
 impl CellBunch {
-    pub fn builder(mut main_cell: Cell) -> CellBunchBuilder {
-        main_cell.tetromino_part = true;
-
+    pub fn builder(main_cell: Cell) -> CellBunchBuilder {
         CellBunchBuilder {
             main_cell,
             attached_cells: Vec::new(),
@@ -55,9 +51,7 @@ impl CellBunchBuilder {
         CellBunch { main_cell: self.main_cell, attached_cells: self.attached_cells }
     }
 
-    pub fn attach_cell(mut self, mut cell: Cell) -> CellBunchBuilder {
-        cell.tetromino_part = true;
-
+    pub fn attach_cell(mut self, cell: Cell) -> CellBunchBuilder {
         self.attached_cells.push(cell);
 
         self

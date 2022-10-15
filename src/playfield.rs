@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 use nalgebra::Vector2;
 
@@ -9,7 +9,7 @@ const HEIGHT: usize = 24;
 
 pub struct Playfield {
     // 10 cells wide by 24 cells tall 
-    pub cells: Vec<Vec<Cell>>,
+    cells: Vec<Vec<Cell>>,
 }
 
 impl fmt::Display for Playfield {
@@ -59,11 +59,16 @@ impl Playfield {
         }
     }
     
-    pub fn spawn_tetromino(&mut self, t: Tetromino) {
+    // Returns a Vector of pointers to the cells of the tetromino
+    pub fn spawn_tetromino(&mut self, t: Tetromino) -> Vec<(usize, usize)> {
+        let mut tetromino_cells = Vec::new();
+
         let y = t.cell_data.main_cell.position.y as usize;
         let x = t.cell_data.main_cell.position.x as usize;
 
         self.cells[y][x] = t.cell_data.main_cell.clone();
+
+        tetromino_cells.push((y, x));
 
         for cell in t.cell_data.attached_cells {
             // Convert relative coords to playfield coords
@@ -76,18 +81,30 @@ impl Playfield {
             cell.position.x = x as isize;
 
             self.cells[y][x] = cell;
+
+            tetromino_cells.push((y, x));
+        }
+        
+        tetromino_cells
+    }
+
+    /// Applys `physics` to the given positions
+    pub fn apply_falling(&mut self, positions: &Vec<(usize, usize)>) {
+        for (y, x) in positions {
+            // Do not fall if the cell below our position is not empty, and make sure the cell we are checking is not one of the given 
+            // positions.
+            if !positions.contains(&(*y+1, *x)) && self.cells[*y+1][*x].character != ' ' { return; }
+        }
+
+        for (y, x) in positions {
+            // Move each piece one cell down since they all passed the check
+            self.cells[*y][*x].position.y += 1;
         }
     }
 
-    /// Applys `physics` to each cell, modifying the cells position
-    /// This will return true if all physics were applied
-    pub fn apply_falling(&mut self) -> bool {
-        true
-    }
-
     pub fn update_positions(&mut self) {
-        for real_y in 0..HEIGHT {
-            for real_x in 0..WIDTH {
+        for real_y in (0..HEIGHT).rev() {
+            for real_x in (0..WIDTH).rev() {
                 let cell_y = self.cells[real_y][real_x].position.y as usize;
                 let cell_x = self.cells[real_y][real_x].position.x as usize;
 

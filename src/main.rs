@@ -8,13 +8,15 @@ fn main() {
 
     let i = Tetromino::new(TetrominoKind::I, Vector2::new(5, 10), 0);
 
-    game.playfield.spawn_tetromino(i);
+    let tetromino = game.playfield.spawn_tetromino(i);
 
     game.print_playfield();
 
     thread::sleep(Duration::from_secs(1));
+    
+    game.playfield.apply_falling(&tetromino);
 
-    game.playfield.apply_falling();
+    game.playfield.update_positions();
 
     game.print_playfield();
 }
