@@ -89,8 +89,8 @@ impl Playfield {
     }
 
     /// Applys `physics` to the given positions
-    pub fn apply_falling(&mut self, positions: &Vec<(usize, usize)>) {
-        for (y, x) in positions {
+    pub fn apply_falling(&mut self, positions: &mut Vec<(usize, usize)>) {
+        for (y, x) in &*positions {
             // Do not fall if the cell below our position is not empty, and make sure the cell we are checking is not one of the given 
             // positions.
             if !positions.contains(&(*y+1, *x)) && self.cells[*y+1][*x].character != ' ' { return; }
@@ -99,6 +99,7 @@ impl Playfield {
         for (y, x) in positions {
             // Move each piece one cell down since they all passed the check
             self.cells[*y][*x].position.y += 1;
+            *y += 1;
         }
     }
 
