@@ -58,7 +58,7 @@ impl Playfield {
     }
 
     // Returns a Vector of pointers to the cells of the tetromino
-    pub fn spawn_tetromino(&mut self, t: Tetromino) -> Vec<(usize, usize)> {
+    pub fn spawn_tetromino(&mut self, t: &Tetromino) -> Vec<(usize, usize)> {
         let mut tetromino_cells = Vec::new();
 
         let y = t.cell_data.main_cell.position.y as usize;
@@ -68,7 +68,7 @@ impl Playfield {
 
         tetromino_cells.push((y, x));
 
-        for cell in t.cell_data.attached_cells {
+        for cell in &t.cell_data.attached_cells {
             // Convert relative coords to playfield coords
             let y = (y as isize + cell.position.y) as usize;
             let x = (x as isize + cell.position.x) as usize;
@@ -87,7 +87,7 @@ impl Playfield {
     }
 
     /// Applys `physics` to the given positions
-    pub fn apply_falling(&mut self, positions: &mut Vec<(usize, usize)>) {
+    pub fn apply_falling(&mut self, positions: &mut Vec<(usize, usize)>) -> bool {
         // Foreach of the positions ...
         for (y, x) in &*positions {
             // If the cell below is not empty, and (y+1, x) is not part of the tetromino/positions or y is greater than (HEIGHT - 1), do not
@@ -95,7 +95,7 @@ impl Playfield {
             if *y >= (HEIGHT - 1)
                 || self.cells[*y + 1][*x].character != ' ' && !positions.contains(&(*y + 1, *x))
             {
-                return;
+                return true;
             }
         }
 
@@ -104,6 +104,8 @@ impl Playfield {
             self.cells[*y][*x].position.y += 1;
             *y += 1;
         }
+
+        false
     }
 
     pub fn update_positions(&mut self) {
