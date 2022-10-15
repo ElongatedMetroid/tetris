@@ -1,6 +1,6 @@
 use nalgebra::Vector2;
 
-use crate::cell::{CellBunch, Cell};
+use crate::cell::{Cell, CellBunch};
 
 #[derive(Clone, Copy)]
 pub enum TetrominoKind {
@@ -33,15 +33,15 @@ impl Tetromino {
                         .attach_cell(Cell::new('■', Vector2::new(0, 1)))
                         // ■ <-- This
                         // ■ <-- Main
-                        // ■ 
+                        // ■
                         .attach_cell(Cell::new('■', Vector2::new(0, -1)))
                         // ■ <-- This
-                        // ■ 
+                        // ■
                         // ■ <-- Main
-                        // ■ 
+                        // ■
                         .attach_cell(Cell::new('■', Vector2::new(0, -2)))
                         .build()
-                },
+                }
                 TetrominoKind::J => todo!(),
                 TetrominoKind::L => todo!(),
                 TetrominoKind::O => todo!(),
