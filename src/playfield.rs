@@ -1,14 +1,14 @@
-use std::{fmt, rc::Rc};
+use std::fmt;
 
 use nalgebra::Vector2;
 
-use crate::{tetromino::Tetromino, cell::Cell};
+use crate::{cell::Cell, tetromino::Tetromino};
 
 const WIDTH: usize = 10;
 const HEIGHT: usize = 24;
 
 pub struct Playfield {
-    // 10 cells wide by 24 cells tall 
+    // 10 cells wide by 24 cells tall
     cells: Vec<Vec<Cell>>,
 }
 
@@ -50,15 +50,13 @@ impl Playfield {
             let mut row = Vec::new();
             for x in 0..WIDTH {
                 row.push(Cell::new(' ', Vector2::new(x as isize, y as isize)));
-            } 
+            }
             cells.push(row);
         }
 
-        Self {
-            cells,
-        }
+        Self { cells }
     }
-    
+
     // Returns a Vector of pointers to the cells of the tetromino
     pub fn spawn_tetromino(&mut self, t: Tetromino) -> Vec<(usize, usize)> {
         let mut tetromino_cells = Vec::new();
@@ -84,16 +82,21 @@ impl Playfield {
 
             tetromino_cells.push((y, x));
         }
-        
+
         tetromino_cells
     }
 
     /// Applys `physics` to the given positions
     pub fn apply_falling(&mut self, positions: &mut Vec<(usize, usize)>) {
+        // Foreach of the positions ...
         for (y, x) in &*positions {
-            // Do not fall if the cell below our position is not empty, and make sure the cell we are checking is not one of the given 
-            // positions.
-            if !positions.contains(&(*y+1, *x)) && self.cells[*y+1][*x].character != ' ' { return; }
+            // If the cell below is not empty, and (y+1, x) is not part of the tetromino/positions or y is greater than (HEIGHT - 1), do not
+            // try to fall
+            if *y >= (HEIGHT - 1)
+                || self.cells[*y + 1][*x].character != ' ' && !positions.contains(&(*y + 1, *x))
+            {
+                return;
+            }
         }
 
         for (y, x) in positions {
@@ -112,7 +115,8 @@ impl Playfield {
                 if (real_y, real_x) != (cell_y, cell_x) {
                     let cell = self.cells[real_y][real_x].clone();
 
-                    self.cells[real_y][real_x] = Cell::new(' ', Vector2::new(real_x as isize, real_y as isize));
+                    self.cells[real_y][real_x] =
+                        Cell::new(' ', Vector2::new(real_x as isize, real_y as isize));
 
                     self.cells[cell_y][cell_x] = cell;
                 }
