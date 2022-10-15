@@ -1,6 +1,7 @@
 use std::{thread, time::Duration};
 
 use nalgebra::Vector2;
+use rand::prelude::SliceRandom;
 
 use crate::{
     playfield::Playfield,
@@ -19,18 +20,22 @@ impl Game {
         }
     }
     pub fn run(&mut self) {
-        let i = Tetromino::new(TetrominoKind::I, Vector2::new(5, 10), 0);
-
-        let mut tetromino = self.playfield.spawn_tetromino(i);
+        let pieces = Tetromino::all(Vector2::new(5, 10));
 
         loop {
-            print!("\x1B[2J\x1B[1;1H");
-            self.print_playfield();
+            let mut tetromino = self.playfield.spawn_tetromino(pieces.choose(&mut rand::thread_rng()).unwrap());
 
-            thread::sleep(Duration::from_millis(500));
+            loop {
+                print!("\x1B[2J\x1B[1;1H");
+                self.print_playfield();
 
-            self.playfield.apply_falling(&mut tetromino);
-            self.playfield.update_positions();
+                thread::sleep(Duration::from_millis(500));
+
+                if self.playfield.apply_falling(&mut tetromino) {
+                    break;
+                }
+                self.playfield.update_positions();
+            }
         }
     }
     pub fn print_playfield(&self) {
