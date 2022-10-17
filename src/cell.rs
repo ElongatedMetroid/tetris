@@ -10,16 +10,14 @@ pub struct Cell {
 }
 
 /// A collection of Cell's attached in a certain way
+#[derive(Clone)]
 pub struct CellBunch {
-    /// Main cell of the bunch, this cell will be used to rotate around
-    pub(super) main_cell: Cell,
-    /// Vector of Cell's (the position of the cells is relative to the main_cell)
-    pub(super) attached_cells: Vec<Cell>,
+    /// Vector of Cell's attached to each other
+    pub(super) cells: Vec<Cell>,
 }
 
 pub struct CellBunchBuilder {
-    main_cell: Cell,
-    attached_cells: Vec<Cell>,
+    cells: Vec<Cell>,
 }
 
 impl fmt::Display for Cell {
@@ -38,10 +36,9 @@ impl Cell {
 }
 
 impl CellBunch {
-    pub fn builder(main_cell: Cell) -> CellBunchBuilder {
+    pub fn builder() -> CellBunchBuilder {
         CellBunchBuilder {
-            main_cell,
-            attached_cells: Vec::new(),
+            cells: Vec::new(),
         }
     }
 }
@@ -49,13 +46,12 @@ impl CellBunch {
 impl CellBunchBuilder {
     pub fn build(self) -> CellBunch {
         CellBunch {
-            main_cell: self.main_cell,
-            attached_cells: self.attached_cells,
+            cells: self.cells,
         }
     }
 
     pub fn attach_cell(mut self, cell: Cell) -> CellBunchBuilder {
-        self.attached_cells.push(cell);
+        self.cells.push(cell);
 
         self
     }

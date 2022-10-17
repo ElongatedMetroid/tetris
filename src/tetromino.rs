@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::cell::{Cell, CellBunch};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum TetrominoKind {
     I,
     J,
@@ -13,8 +13,9 @@ pub enum TetrominoKind {
     Z,
 }
 
+#[derive(Clone)]
 pub struct Tetromino {
-    kind: TetrominoKind,
+    pub kind: TetrominoKind,
     pub(super) cell_data: CellBunch,
     rotation: usize,
 }
@@ -27,79 +28,86 @@ impl Tetromino {
                 // TODO: Have all tetrominos stored as statics, so they dont have to be loaded into memory each time
                 TetrominoKind::I => {
                     // ■ <-- Main
-                    CellBunch::builder(Cell::new('▢', position))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
                         // ■ <-- Main
                         // ■ <-- this
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
                         // ■ <-- This
                         // ■ <-- Main
                         // ■
-                        .attach_cell(Cell::new('■', Vector2::new(0, -1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y - 1)))
                         // ■ <-- This
                         // ■
                         // ■ <-- Main
                         // ■
-                        .attach_cell(Cell::new('■', Vector2::new(0, -2)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y - 2)))
                         .build()
                 }
                 TetrominoKind::J => {
                     // ■ <-- Main
-                    CellBunch::builder(Cell::new('▢', position))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
                         // ■ <-- Main
                         // ■ <-- this
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
                         // ■ <-- This
                         // ■ <-- Main
                         // ■
-                        .attach_cell(Cell::new('■', Vector2::new(0, -1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y - 1)))
                         //  ■
                         //  ■ <-- Main
                         // ■■
-                        .attach_cell(Cell::new('■', Vector2::new(-1, 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x - 1, position.y + 1)))
                         .build()
                 },
                 TetrominoKind::L => {
                     // ■ <-- Main
-                    CellBunch::builder(Cell::new('▢', position))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
                         // ■ <-- Main
                         // ■ <-- this
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
                         // ■ <-- This
                         // ■ <-- Main
                         // ■
-                        .attach_cell(Cell::new('■', Vector2::new(0, -1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y - 1)))
                         // ■
                         // ■ <-- Main
                         // ■■
-                        .attach_cell(Cell::new('■', Vector2::new(1, 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 1)))
                         .build()
                 },
                 TetrominoKind::O => {
-                    CellBunch::builder(Cell::new('▢', position))
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
-                        .attach_cell(Cell::new('■', Vector2::new(1, 0)))
-                        .attach_cell(Cell::new('■', Vector2::new(1, 1)))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 0)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 1)))
                         .build()
                 },
                 TetrominoKind::S => {
-                    CellBunch::builder(Cell::new('▢', position))
-                        .attach_cell(Cell::new('■', Vector2::new(1, 0)))
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
-                        .attach_cell(Cell::new('■', Vector2::new(-1, 1)))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 0)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x - 1, position.y + 1)))
                         .build()
                 },
                 TetrominoKind::T => {
-                    CellBunch::builder(Cell::new('▢', position))
-                        .attach_cell(Cell::new('■', Vector2::new(1, 0)))
-                        .attach_cell(Cell::new('■', Vector2::new(0, 1)))
-                        .attach_cell(Cell::new('■', Vector2::new(-1, 0)))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x - 1, position.y + 0)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y + 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 0)))
                         .build()
                 },
                 TetrominoKind::Z => {
-                    CellBunch::builder(Cell::new('▢', position))
-                        .attach_cell(Cell::new('■', Vector2::new(1, 0)))
-                        .attach_cell(Cell::new('■', Vector2::new(0, -1)))
-                        .attach_cell(Cell::new('■', Vector2::new(-1, -1)))
+                    CellBunch::builder()
+                        .attach_cell(Cell::new('■', Vector2::new(position.x, position.y)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 1, position.y + 0)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x + 0, position.y - 1)))
+                        .attach_cell(Cell::new('■', Vector2::new(position.x - 1, position.y - 1)))
                         .build()
                 },
             },
