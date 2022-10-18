@@ -57,52 +57,37 @@ impl Playfield {
         Self { cells }
     }
 
-    // Returns a Vector of pointers to the cells of the tetromino
-    pub fn spawn_tetromino(&mut self, t: &Tetromino) -> Vec<(usize, usize)> {
-        let mut tetromino_cells = Vec::new();
-
-        let y = t.cell_data.main_cell.position.y as usize;
-        let x = t.cell_data.main_cell.position.x as usize;
-
-        self.cells[y][x] = t.cell_data.main_cell.clone();
-
-        tetromino_cells.push((y, x));
-
-        for cell in &t.cell_data.attached_cells {
+    /// Clone each Cell of the tetromino onto the playfield
+    pub fn spawn_tetromino(&mut self, t: &mut Tetromino) {
+        for cell in &mut t.cell_data.cells {
             // Convert relative coords to playfield coords
-            let y = (y as isize + cell.position.y) as usize;
-            let x = (x as isize + cell.position.x) as usize;
+            let y = cell.position.y as usize;
+            let x = cell.position.x as usize;
 
-            let mut cell = cell.clone();
-
-            cell.position.y = y as isize;
-            cell.position.x = x as isize;
-
-            self.cells[y][x] = cell;
-
-            tetromino_cells.push((y, x));
+            self.cells[y][x] = cell.clone();
         }
-
-        tetromino_cells
     }
 
     /// Applys `physics` to the given positions
-    pub fn apply_falling(&mut self, positions: &mut Vec<(usize, usize)>) -> bool {
+    pub fn apply_falling(&mut self, t: &mut Tetromino) -> bool {
         // Foreach of the positions ...
-        for (y, x) in &*positions {
+        for Cell{ position, .. } in &*t.cell_data.cells {
+            let y = position.y as usize;
+            let x = position.x as usize;
+
             // If the cell below is not empty, and (y+1, x) is not part of the tetromino/positions or y is greater than (HEIGHT - 1), do not
             // try to fall
-            if *y >= (HEIGHT - 1)
-                || self.cells[*y + 1][*x].character != ' ' && !positions.contains(&(*y + 1, *x))
+            if y >= (HEIGHT - 1)
+                || self.cells[y + 1][x].character != ' ' && !t.cell_data.cells.contains(&Cell::new('■', Vector2::new(x as isize, y as isize+1)))
             {
                 return true;
             }
         }
 
-        for (y, x) in positions {
+        for Cell{position, ..} in &mut t.cell_data.cells {
             // Move each piece one cell down since they all passed the check
-            self.cells[*y][*x].position.y += 1;
-            *y += 1;
+            self.cells[position.y as usize][position.x as usize].position.y += 1;
+            position.y += 1;
         }
 
         false

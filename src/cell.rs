@@ -2,7 +2,7 @@ use std::fmt;
 
 use nalgebra::Vector2;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Cell {
     pub(super) character: char,
     /// Only used for spawning in the tetromino
