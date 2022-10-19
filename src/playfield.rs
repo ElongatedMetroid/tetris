@@ -12,6 +12,13 @@ pub struct Playfield {
     cells: Vec<Vec<Cell>>,
 }
 
+#[derive(PartialEq, Eq)]
+pub enum Direction {
+    Down,
+    Left,
+    Right,
+}
+
 impl fmt::Display for Playfield {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in &self.cells {
@@ -68,26 +75,80 @@ impl Playfield {
         }
     }
 
-    /// Applys `physics` to the given positions
-    pub fn apply_falling(&mut self, t: &mut Tetromino) -> bool {
+    /// Applys `physics` to the given positions, returns true if you cannot fall (move down) anymore
+    pub fn move_tetromino(&mut self, direction: Direction, t: &mut Tetromino) -> bool {
         // Foreach of the positions ...
-        for Cell{ position, .. } in &*t.cell_data.cells {
+        for Cell { position, .. } in &*t.cell_data.cells {
             let y = position.y as usize;
             let x = position.x as usize;
 
             // If the cell below is not empty, and (y+1, x) is not part of the tetromino/positions or y is greater than (HEIGHT - 1), do not
             // try to fall
-            if y >= (HEIGHT - 1)
-                || self.cells[y + 1][x].character != ' ' && !t.cell_data.cells.contains(&Cell::new('■', Vector2::new(x as isize, y as isize+1)))
+            if if direction == Direction::Down { y } else { x }
+                >= (if direction == Direction::Down {
+                    HEIGHT - 1
+                } else if direction == Direction::Right {
+                    WIDTH - 1
+                } else {
+                    0
+                })
+                || self.cells[if direction == Direction::Down {
+                    y + 1
+                } else {
+                    y
+                }][if direction == Direction::Right {
+                    x + 1
+                } else if direction == Direction::Left {
+                    x - 1
+                } else {
+                    x
+                }]
+                .character
+                    != ' '
+                    && !t.cell_data.cells.contains(&Cell::new(
+                        '■',
+                        Vector2::new(
+                            if direction == Direction::Right {
+                                x + 1
+                            } else if direction == Direction::Left {
+                                x - 1
+                            } else {
+                                x
+                            } as isize,
+                            if direction == Direction::Down {
+                                y + 1
+                            } else {
+                                y
+                            } as isize,
+                        ),
+                    ))
             {
                 return true;
             }
         }
 
-        for Cell{position, ..} in &mut t.cell_data.cells {
+        for Cell { position, .. } in t.cell_data.cells.iter_mut().rev() {
             // Move each piece one cell down since they all passed the check
-            self.cells[position.y as usize][position.x as usize].position.y += 1;
-            position.y += 1;
+            self.cells[position.y as usize][position.x as usize]
+                .position
+                .y += if direction == Direction::Down { 1 } else { 0 };
+            self.cells[position.y as usize][position.x as usize]
+                .position
+                .x += if direction == Direction::Right {
+                1
+            } else if direction == Direction::Left {
+                -1
+            } else {
+                0
+            };
+            position.y += if direction == Direction::Down { 1 } else { 0 };
+            position.x += if direction == Direction::Right {
+                1
+            } else if direction == Direction::Left {
+                -1
+            } else {
+                0
+            };
         }
 
         false
