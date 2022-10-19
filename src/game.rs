@@ -1,5 +1,6 @@
 use std::{process, thread, time::Duration};
 
+use device_query::{DeviceState, DeviceQuery, Keycode};
 use nalgebra::Vector2;
 use rand::prelude::SliceRandom;
 
@@ -21,6 +22,7 @@ impl Game {
     pub fn run(&mut self) {
         let pieces = Tetromino::all(Vector2::new(5, 10));
         let mut rng = rand::thread_rng();
+        let device_state = DeviceState::new();
 
         loop {
             let mut piece: Tetromino = pieces.choose(&mut rng).unwrap().clone();
@@ -33,15 +35,19 @@ impl Game {
 
                 thread::sleep(Duration::from_millis(500));
 
-                if self.playfield.move_tetromino(Direction::Left, &mut piece) {
-                    process::exit(1);
+                let direction = match device_state.get_keys().last() {
+                    Some(&Keycode::Left) => Some(Direction::Left),
+                    Some(&Keycode::Right) => Some(Direction::Right),
+                    _ => None,
+                };
+
+                if let Some(direction) = direction {
+                    self.playfield.move_tetromino(direction, &mut piece);
                 }
-                self.playfield.update_positions();
 
                 if self.playfield.move_tetromino(Direction::Down, &mut piece) {
                     break;
                 }
-                self.playfield.update_positions();
             }
         }
     }
