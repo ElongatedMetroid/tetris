@@ -37,17 +37,13 @@ impl Cell {
 
 impl CellBunch {
     pub fn builder() -> CellBunchBuilder {
-        CellBunchBuilder {
-            cells: Vec::new(),
-        }
+        CellBunchBuilder { cells: Vec::new() }
     }
 }
 
 impl CellBunchBuilder {
     pub fn build(self) -> CellBunch {
-        CellBunch {
-            cells: self.cells,
-        }
+        CellBunch { cells: self.cells }
     }
 
     pub fn attach_cell(mut self, cell: Cell) -> CellBunchBuilder {

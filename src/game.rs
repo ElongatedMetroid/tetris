@@ -1,16 +1,15 @@
-use std::{thread, time::Duration, process};
+use std::{process, thread, time::Duration};
 
 use nalgebra::Vector2;
 use rand::prelude::SliceRandom;
 
 use crate::{
-    playfield::Playfield,
+    playfield::{Direction, Playfield},
     tetromino::{Tetromino, TetrominoKind},
 };
 
 pub struct Game {
-    // (Temporarily public for testing purposes  )
-    pub playfield: Playfield,
+    playfield: Playfield,
 }
 
 impl Game {
@@ -34,10 +33,14 @@ impl Game {
 
                 thread::sleep(Duration::from_millis(500));
 
-                if self.playfield.apply_falling(&mut piece) {
+                if self.playfield.move_tetromino(Direction::Left, &mut piece) {
+                    process::exit(1);
+                }
+                self.playfield.update_positions();
+
+                if self.playfield.move_tetromino(Direction::Down, &mut piece) {
                     break;
                 }
-                
                 self.playfield.update_positions();
             }
         }
