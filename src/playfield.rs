@@ -12,7 +12,7 @@ pub struct Playfield {
     cells: Vec<Vec<Cell>>,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Direction {
     Down,
     Left,
@@ -85,7 +85,7 @@ impl Playfield {
             // If the cell below is not empty, and (y+1, x) is not part of the tetromino/positions or y is greater than (HEIGHT - 1), do not
             // try to fall
             if if direction == Direction::Down { y } else { x }
-                >= (if direction == Direction::Down {
+                == (if direction == Direction::Down {
                     HEIGHT - 1
                 } else if direction == Direction::Right {
                     WIDTH - 1
@@ -151,22 +151,34 @@ impl Playfield {
             };
         }
 
+        self.update_positions(direction);
+
         false
     }
 
-    pub fn update_positions(&mut self) {
+    pub fn update_positions(&mut self, direction: Direction) {
+        let mut update_position = |real_x: usize, real_y: usize| {
+            let cell_y = self.cells[real_y][real_x].position.y as usize;
+            let cell_x = self.cells[real_y][real_x].position.x as usize;
+
+            if (real_y, real_x) != (cell_y, cell_x) {
+                let cell = self.cells[real_y][real_x].clone();
+
+                self.cells[real_y][real_x] =
+                    Cell::new(' ', Vector2::new(real_x as isize, real_y as isize));
+
+                self.cells[cell_y][cell_x] = cell;
+            }
+        };
+
         for real_y in (0..HEIGHT).rev() {
-            for real_x in (0..WIDTH).rev() {
-                let cell_y = self.cells[real_y][real_x].position.y as usize;
-                let cell_x = self.cells[real_y][real_x].position.x as usize;
-
-                if (real_y, real_x) != (cell_y, cell_x) {
-                    let cell = self.cells[real_y][real_x].clone();
-
-                    self.cells[real_y][real_x] =
-                        Cell::new(' ', Vector2::new(real_x as isize, real_y as isize));
-
-                    self.cells[cell_y][cell_x] = cell;
+            if direction == Direction::Left { 
+                for real_x in 0..WIDTH {
+                    update_position(real_x, real_y);
+                }
+            } else {
+                for real_x in (0..WIDTH).rev() {
+                    update_position(real_x, real_y);
                 }
             }
         }
