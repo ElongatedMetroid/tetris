@@ -23,8 +23,12 @@ impl fmt::Display for Playfield {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in &self.cells {
             write!(f, "|").unwrap();
-            for cell in row {
-                write!(f, "{}", cell).unwrap();
+            for (i, cell) in row.iter().enumerate() {
+                if i == 0 {
+                    write!(f, "{}", cell).unwrap();
+                } else {
+                    write!(f, "|{}", cell).unwrap();
+                }
             }
             writeln!(f, "|").unwrap();
         }
@@ -37,13 +41,17 @@ impl fmt::Debug for Playfield {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (i, row) in self.cells.iter().enumerate() {
             write!(f, "{:2} |", i).unwrap();
-            for cell in row {
-                write!(f, "{}", cell).unwrap();
+            for (i, cell) in row.iter().enumerate() {
+                if i == 0 {
+                    write!(f, "{}", cell).unwrap();
+                } else {
+                    write!(f, "|{}", cell).unwrap();
+                }
             }
             writeln!(f, "|").unwrap();
         }
 
-        writeln!(f, "    0123456789").unwrap();
+        writeln!(f, "    0 1 2 3 4 5 6 7 8 9").unwrap();
 
         Ok(())
     }
