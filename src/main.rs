@@ -1,5 +1,4 @@
-mod game;
-use game::Game;
+use tetris::game::Game;
 
 fn main() {
     Game::new().run();

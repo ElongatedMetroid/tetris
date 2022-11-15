@@ -1,4 +1,4 @@
-mod playfield;
-mod grid;
-mod game;
-mod cell;
+pub mod playfield;
+pub mod grid;
+pub mod game;
+pub mod cell;

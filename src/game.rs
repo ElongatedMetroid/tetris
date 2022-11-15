@@ -1,10 +1,10 @@
 use crate::playfield::Playfield;
 
-pub struct Game {
-    playfield: Playfield,
+pub struct Game<'a> {
+    playfield: Playfield<'a>,
 }
 
-impl Game {
+impl Game<'_> {
     /// Create a new instance of the game
     pub fn new() -> Self {
         Self {

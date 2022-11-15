@@ -1,11 +1,11 @@
 use crate::{grid::Grid, cell::Cell};
 
-pub struct Playfield {
+pub struct Playfield<'a> {
     /// The grid will hold refrences to Cell's
-    grid: Grid<&Cell>
+    grid: Grid<&'a Cell>
 }
 
-impl Playfield {
+impl Playfield<'_> {
     /// Create a new Playfield instance
     pub fn new() -> Self {
         Self {
