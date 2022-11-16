@@ -7,7 +7,7 @@ const PLAYFIELD_HEIGHT: usize = 24;
 
 pub struct Playfield<'a> {
     /// The grid will hold refrences to Cell's
-    grid: Grid<&'a Option<Cell>>,
+    grid: Grid<Option<&'a Cell>>,
 }
 
 impl fmt::Display for Playfield<'_> {
@@ -37,13 +37,13 @@ impl Playfield<'_> {
     /// Create a new Playfield instance
     pub fn new() -> Self {
         let mut playfield = Self {
-            grid: Grid::<&Option<Cell>>::new(),
+            grid: Grid::<Option<&Cell>>::new(),
         };
 
         for _ in 0..PLAYFIELD_HEIGHT {
             let mut row = Vec::new();
             for _ in 0..PLAYFIELD_WIDTH {
-                row.push(&None);
+                row.push(None);
             }
             playfield.grid.grid.push(row);
         }
