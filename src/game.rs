@@ -1,18 +1,23 @@
-use crate::playfield::Playfield;
+use nalgebra::Vector2;
 
-pub struct Game<'a> {
-    playfield: Playfield<'a>,
-}
+use crate::{
+    playfield::{self, Playfield},
+    tetromino::{self, Tetromino, TetrominoKind},
+};
 
-impl Game<'_> {
-    /// Create a new instance of the game
-    pub fn new() -> Self {
-        Self {
-            playfield: Playfield::new(),
-        }
-    }
+pub struct Game;
+
+impl Game {
     /// Run the game
     pub fn run(self) {
-        println!("{}", self.playfield);
+        let mut playfield = Playfield::new();
+
+        let mut tetromino = Tetromino::new(TetrominoKind::I, Vector2::new(5, 10));
+
+        playfield.spawn(&tetromino);
+
+        println!("{}", playfield);
+
+        println!("{}", playfield);
     }
 }
