@@ -1,16 +1,21 @@
 use core::fmt;
+use std::{cell::RefCell, rc::Rc};
 
-use crate::{cell::Cell, grid::Grid};
+use crate::{
+    cell::Cell,
+    grid::Grid,
+    tetromino::{self, Tetromino},
+};
 
 const PLAYFIELD_WIDTH: usize = 10;
 const PLAYFIELD_HEIGHT: usize = 24;
 
-pub struct Playfield<'a> {
+pub struct Playfield {
     /// The grid will hold refrences to Cell's
-    grid: Grid<Option<&'a Cell>>,
+    grid: Grid<Option<Rc<RefCell<Cell>>>>,
 }
 
-impl fmt::Display for Playfield<'_> {
+impl fmt::Display for Playfield {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in &self.grid.grid {
             write!(f, "|").unwrap();
@@ -20,7 +25,7 @@ impl fmt::Display for Playfield<'_> {
                     "{}{}",
                     if i == 0 { "" } else { "|" },
                     match cell {
-                        Some(cell) => cell.character,
+                        Some(cell) => cell.borrow().character,
                         None => ' ',
                     }
                 )
@@ -33,11 +38,11 @@ impl fmt::Display for Playfield<'_> {
     }
 }
 
-impl Playfield<'_> {
+impl Playfield {
     /// Create a new Playfield instance
     pub fn new() -> Self {
         let mut playfield = Self {
-            grid: Grid::<Option<&Cell>>::new(),
+            grid: Grid::<Option<Rc<RefCell<Cell>>>>::new(),
         };
 
         for _ in 0..PLAYFIELD_HEIGHT {
@@ -49,5 +54,13 @@ impl Playfield<'_> {
         }
 
         playfield
+    }
+
+    /// Spawn a tetromino
+    pub fn spawn(&mut self, tetromino: &Tetromino) {
+        for tetromino_cell in &tetromino.cells {
+            self.grid.grid[tetromino_cell.borrow().position.y]
+                [tetromino_cell.borrow().position.x] = Some(Rc::clone(&tetromino_cell));
+        }
     }
 }
