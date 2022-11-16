@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use nalgebra::Vector2;
 
 use crate::cell::Cell;
@@ -14,55 +16,139 @@ pub enum TetrominoKind {
 }
 
 pub struct Tetromino {
-    kind: TetrominoKind,
+    pub(crate) kind: TetrominoKind,
     // All the Cells that make up the tetromino
-    cells: Vec<Cell>,
+    pub(crate) cells: Vec<Rc<RefCell<Cell>>>,
 }
 
 impl Tetromino {
     pub fn new(kind: TetrominoKind, position: Vector2<usize>) -> Self {
         let tetromino_cells = match kind {
             TetrominoKind::I => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y - 2)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y - 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y - 2),
+                ))),
             ],
             TetrominoKind::J => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y - 1)),
-                Cell::new('■', Vector2::new(position.x - 1, position.y + 1)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y - 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x - 1, position.y + 1),
+                ))),
             ],
             TetrominoKind::L => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y - 1)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 1)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y - 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 1),
+                ))),
             ],
             TetrominoKind::O => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 0)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 1)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 0),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 1),
+                ))),
             ],
             TetrominoKind::S => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 0)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x - 1, position.y + 1)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 0),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x - 1, position.y + 1),
+                ))),
             ],
             TetrominoKind::T => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x - 1, position.y + 0)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y + 1)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 0)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x - 1, position.y + 0),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y + 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 0),
+                ))),
             ],
             TetrominoKind::Z => vec![
-                Cell::new('■', Vector2::new(position.x, position.y)),
-                Cell::new('■', Vector2::new(position.x + 1, position.y + 0)),
-                Cell::new('■', Vector2::new(position.x + 0, position.y - 1)),
-                Cell::new('■', Vector2::new(position.x - 1, position.y - 1)),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x, position.y),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 1, position.y + 0),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x + 0, position.y - 1),
+                ))),
+                Rc::new(RefCell::new(Cell::new(
+                    '■',
+                    Vector2::new(position.x - 1, position.y - 1),
+                ))),
             ],
         };
 
