@@ -13,6 +13,6 @@ impl Game<'_> {
     }
     /// Run the game
     pub fn run(self) {
-
+        println!("{}", self.playfield);
     }
 }
