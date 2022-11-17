@@ -4,7 +4,7 @@ use std::{cell::RefCell, rc::Rc};
 use crate::{
     cell::Cell,
     grid::Grid,
-    tetromino::{self, Tetromino},
+    tetromino::Tetromino,
 };
 
 const PLAYFIELD_WIDTH: usize = 10;
@@ -63,4 +63,29 @@ impl Playfield {
                 [tetromino_cell.borrow().position.x] = Some(Rc::clone(&tetromino_cell));
         }
     }
+
+    /// Update the positions of Cell's on the grid, match there position field to the corresponding position on the grid (the positions will
+    /// only be changed if the can_move field is true)
+    pub fn update_positions(&mut self) {
+        for real_y in (0..PLAYFIELD_HEIGHT).rev() {
+            for real_x in 0..PLAYFIELD_WIDTH {
+                let cell = match &self.grid.grid[real_y][real_x] {
+                    Some(cell) => cell,
+                    None => continue,
+                };
+
+                if cell.borrow().can_move {
+                    let cell_y = cell.borrow().position.y;
+                    let cell_x = cell.borrow().position.x;
+
+                    if (real_y, real_x) != (cell_y, cell_x) {
+                        let cell = self.grid.grid[real_y][real_x].take();
+
+                        self.grid.grid[cell_y][cell_x] = cell;
+                    }
+                }
+            }
+        }
+    }
+    // A tetris will
 }
