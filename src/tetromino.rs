@@ -5,6 +5,12 @@ use nalgebra::Vector2;
 use crate::cell::Cell;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Axis {
+    Horizontal,
+    Vertical,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum TetrominoKind {
     I,
     J,
@@ -22,130 +28,158 @@ pub struct Tetromino {
 }
 
 impl Tetromino {
-    pub fn new(kind: TetrominoKind, position: Vector2<usize>) -> Self {
+    pub fn new(can_move: bool, kind: TetrominoKind, position: Vector2<isize>) -> Self {
         let tetromino_cells = match kind {
             TetrominoKind::I => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y - 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y - 2),
                 ))),
             ],
             TetrominoKind::J => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y - 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x - 1, position.y + 1),
                 ))),
             ],
             TetrominoKind::L => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y - 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 1),
                 ))),
             ],
             TetrominoKind::O => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 0),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 1),
                 ))),
             ],
             TetrominoKind::S => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 0),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x - 1, position.y + 1),
                 ))),
             ],
             TetrominoKind::T => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x - 1, position.y + 0),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y + 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 0),
                 ))),
             ],
             TetrominoKind::Z => vec![
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x, position.y),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 1, position.y + 0),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x + 0, position.y - 1),
                 ))),
                 Rc::new(RefCell::new(Cell::new(
+                    can_move,
                     '■',
                     Vector2::new(position.x - 1, position.y - 1),
                 ))),
@@ -159,17 +193,30 @@ impl Tetromino {
     }
 
     /// Returns a vector containing all basic tetrominos
-    pub fn all(position: Vector2<usize>) -> Vec<Tetromino> {
-        let i = Tetromino::new(TetrominoKind::I, position);
-        let j = Tetromino::new(TetrominoKind::J, position);
-        let l = Tetromino::new(TetrominoKind::L, position);
-        let o = Tetromino::new(TetrominoKind::O, position);
-        let s = Tetromino::new(TetrominoKind::S, position);
-        let t = Tetromino::new(TetrominoKind::T, position);
-        let z = Tetromino::new(TetrominoKind::Z, position);
+    pub fn all(can_move: bool, position: Vector2<isize>) -> Vec<Tetromino> {
+        let i = Tetromino::new(can_move, TetrominoKind::I, position);
+        let j = Tetromino::new(can_move, TetrominoKind::J, position);
+        let l = Tetromino::new(can_move, TetrominoKind::L, position);
+        let o = Tetromino::new(can_move, TetrominoKind::O, position);
+        let s = Tetromino::new(can_move, TetrominoKind::S, position);
+        let t = Tetromino::new(can_move, TetrominoKind::T, position);
+        let z = Tetromino::new(can_move, TetrominoKind::Z, position);
 
         let pieces = vec![i, j, l, o, s, t, z];
 
         pieces
+    }
+
+    pub fn move_unchecked(&self, axis: Axis, amount: isize) {
+        for cell in &self.cells {
+            match axis {
+                Axis::Horizontal => {
+                    cell.borrow_mut().position.x += amount;
+                }
+                Axis::Vertical => {
+                    cell.borrow_mut().position.y += amount;
+                }
+            }
+        }
     }
 }
