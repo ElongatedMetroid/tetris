@@ -260,14 +260,32 @@ impl Tetromino {
                         return false;
                     }
                 }
-                None => {
-                    self.move_unchecked(playfield, axis, amount);
-
-                    return true;
-                },
+                None => (),
             }
         }
 
+        self.move_unchecked(playfield, axis, amount);
+
         true
+    }
+
+    pub fn fall(&self, playfield: &mut Playfield) {
+        while self.down(playfield) {}
+    }
+
+    pub fn up(&self, playfield: &mut Playfield) -> bool {
+        self.move_checked(playfield, Axis::Vertical, -1)
+    }
+
+    pub fn down(&self, playfield: &mut Playfield) -> bool {
+        self.move_checked(playfield, Axis::Vertical, 1)
+    } 
+
+    pub fn left(&self, playfield: &mut Playfield) -> bool {
+        self.move_checked(playfield, Axis::Horizontal, -1)
+    }
+
+    pub fn right(&self, playfield: &mut Playfield) -> bool {
+        self.move_checked(playfield, Axis::Horizontal, 1)
     }
 }
