@@ -1,5 +1,6 @@
 use nalgebra::Vector2;
 
+#[derive(PartialEq, Eq)]
 pub struct Cell {
     /// Controls whether the cell can move or not (ie fall)
     pub(crate) can_move: bool,
