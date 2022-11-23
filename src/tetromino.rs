@@ -2,7 +2,10 @@ use std::{cell::RefCell, rc::Rc};
 
 use nalgebra::Vector2;
 
-use crate::{cell::Cell, playfield::{Playfield, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT}};
+use crate::{
+    cell::Cell,
+    playfield::{Playfield, PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH},
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Axis {
@@ -209,12 +212,21 @@ impl Tetromino {
 
     /// Move the piece without checking if it will hit a, an area that is out of bounds, or b, another cell
     pub fn move_unchecked(&self, playfield: &mut Playfield, axis: Axis, amount: isize) {
+        let mut cell_options = Vec::new();
+
+        // Take all the cell pointers (at the old positions) from the grid
         for cell in &self.cells {
             // Take the cell from the grid
-            let cell_option = playfield.grid.grid[cell.borrow().position.y as usize]
-                [cell.borrow().position.x as usize]
-                .take();
+            cell_options.push(
+                playfield.grid.grid[cell.borrow().position.y as usize]
+                    [cell.borrow().position.x as usize]
+                    .take(),
+            );
+        }
 
+        // Put the cell pointers that we took from the grid earlier back into the grid at the updated positions. This is done in two seperate loops so that
+        // we do not overwright the piece with itself.
+        for (cell, cell_option) in self.cells.iter().zip(cell_options) {
             match axis {
                 Axis::Horizontal => {
                     cell.borrow_mut().position.x += amount;
@@ -279,7 +291,7 @@ impl Tetromino {
 
     pub fn down(&self, playfield: &mut Playfield) -> bool {
         self.move_checked(playfield, Axis::Vertical, 1)
-    } 
+    }
 
     pub fn left(&self, playfield: &mut Playfield) -> bool {
         self.move_checked(playfield, Axis::Horizontal, -1)
