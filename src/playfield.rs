@@ -56,7 +56,7 @@ impl Playfield {
     pub fn spawn(&mut self, tetromino: &Tetromino) {
         for tetromino_cell in &tetromino.cells {
             self.grid.grid[tetromino_cell.borrow().position.y as usize]
-                [tetromino_cell.borrow().position.x as usize] = Some(Rc::clone(&tetromino_cell));
+                [tetromino_cell.borrow().position.x as usize] = Some(Rc::clone(tetromino_cell));
         }
     }
 
