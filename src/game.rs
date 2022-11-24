@@ -1,11 +1,7 @@
 use device_query::{DeviceQuery, DeviceState, Keycode};
 use nalgebra::Vector2;
-use rand::seq::SliceRandom;
 
-use crate::{
-    playfield::Playfield,
-    tetromino::{Axis, Tetromino, TetrominoKind},
-};
+use crate::{playfield::Playfield, tetromino::Tetromino};
 
 pub struct Game;
 
@@ -18,8 +14,7 @@ impl Game {
         // Thread that checks for line clears
         let device_state = DeviceState::new();
         let mut playfield = Playfield::new();
-        let tetrominos = Tetromino::all(true, Vector2::new(5, 10));
-        let mut tetromino = tetrominos.choose(&mut rand::thread_rng()).unwrap();
+        let mut tetromino = Tetromino::random(Vector2::new(5, 10));
 
         playfield.spawn(&tetromino);
 
@@ -41,7 +36,9 @@ impl Game {
 
             print_timer += time_elapsed;
             while print_timer >= print_every {
+                // Clear the terminal ( TODO make this portable? )
                 print!("\x1B[2J\x1B[1;1H");
+                // Print the playfield
                 println!("{}", playfield);
 
                 print_timer -= print_every;
@@ -52,9 +49,8 @@ impl Game {
             while falling_timer >= fall_every {
                 // If the piece is done falling
                 if !tetromino.down(&mut playfield) {
-                    tetromino.kill(&mut playfield);
                     // Generate a new piece
-                    tetromino = tetrominos.choose(&mut rand::thread_rng()).unwrap();
+                    tetromino = Tetromino::random(Vector2::new(5, 10));
                     playfield.spawn(&tetromino);
                 }
 
