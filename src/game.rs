@@ -8,10 +8,6 @@ pub struct Game;
 impl Game {
     /// Run the game
     pub fn run(self) {
-        // Thread controling player movement
-        // Thread that moves the piece down and when its at the bottom generate a new piece
-        // Thread that prints the board
-        // Thread that checks for line clears
         let device_state = DeviceState::new();
         let mut playfield = Playfield::new();
         let mut tetromino = Tetromino::random(Vector2::new(5, 10));
@@ -60,9 +56,6 @@ impl Game {
             input_timer += time_elapsed;
             while input_timer >= input_every {
                 let keys = device_state.get_keys();
-                if keys.contains(&Keycode::Up) {
-                    tetromino.up(&mut playfield);
-                }
                 if keys.contains(&Keycode::Down) {
                     tetromino.down(&mut playfield);
                 }

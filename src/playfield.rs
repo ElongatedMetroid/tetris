@@ -59,6 +59,4 @@ impl Playfield {
                 [tetromino_cell.borrow().position.x as usize] = Some(Rc::clone(tetromino_cell));
         }
     }
-
-    // A tetris will
 }
